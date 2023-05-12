@@ -1,0 +1,25 @@
+{
+  "name": "f",
+  "displayName": "f",
+  "description": "f",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.78.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [{
+      "id": "f",
+      "aliases": ["f", "f"],
+      "extensions": ["f"],
+      "configuration": "./language-configuration.json"
+    }],
+    "grammars": [{
+      "language": "f",
+      "scopeName": "source.f",
+      "path": "./syntaxes/f.tmLanguage.json"
+    }]
+  }
+}

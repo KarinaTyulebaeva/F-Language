@@ -1,0 +1,106 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "f",
+	"patterns": [
+		{
+			"include": "#buildin"
+		},
+		{
+			"include": "#number"
+		},
+		{
+			"include": "#identifier"
+		}
+	],
+	"repository": {
+		"buildin": {
+			"patterns": [
+				{
+					"name": "entity.name.type",
+					"match": "plus"
+				},
+				{
+					"name": "entity.name.type",
+					"match": "\\bminus\\b"
+				},
+				{
+					"name": "entity.name.type",
+					"match": "\\bmult\\b"
+				},
+				{
+					"name": "entity.name.type",
+					"match": "\\bdivide\\b"
+				},
+				{
+					"name": "entity.name.type",
+					"match": "\\bisbool\\b"
+				},
+				{
+					"name": "entity.name.type",
+					"match": "\\bless\\b"
+				},
+				{
+					"name": "entity.name.type",
+					"match": "\\bsetq\\b"
+				},
+				{
+					"name": "entity.name.type",
+					"match": "\\bfunc\\b"
+				},
+				{
+					"name": "entity.name.type",
+					"match": "\\breturn\\b"
+				},
+				{
+					"name": "entity.name.type",
+					"match": "\\bwhile\\b"
+				},
+				{
+					"name": "entity.name.type",
+					"match": "\\bcond\\b"
+				},
+				{
+					"name": "entity.name.type",
+					"match": "\\bbreak\\b"
+				},
+				{
+					"name": "entity.name.type",
+					"match": "\\bgreater\\b"
+				},
+				{
+					"name": "entity.name.type",
+					"match": "\\blambda\\b"
+				},
+				{
+					"name": "entity.name.type",
+					"match": "\\bproq\\b"
+				},
+				{
+					"name": "entity.name.type",
+					"match": "\\bquote\\b"
+				}
+			]
+		},
+		"number": {
+			"patterns": [
+				{
+					"name": "constant.numeric",
+					"match": "(\\+|\\-)?\\d*(\\.?\\d+)"
+				}
+			]
+		},
+		"identifier": {
+			"patterns": [
+				{
+					"name": "constant.character.escape",
+					"match": "[_a-zA-Z][_a-zA-Z0-9]"
+				},
+				{
+					"name": "constant.character.escape",
+					"match": "[_a-zA-Z]"
+				}
+			]
+		}
+	},
+	"scopeName": "source.f"
+}

@@ -15,7 +15,7 @@ abstract class Element() {
     abstract fun print(): String
 }
 
-class List(val elements: ArrayList<Element>) : Element() {
+open class List(val elements: ArrayList<Element>) : Element() {
 
     override fun evaluate(state: ProgramState, input: kotlin.collections.List<Element>?): Element {
         when (val firstElement = elements[0].evaluate(state)) {

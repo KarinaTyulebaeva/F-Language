@@ -1,6 +1,7 @@
 package program
 
 import program.exceptions.SyntaxException
+import staticanalyzer.AnalysisData
 import tokens.LiteralToken
 import kotlin.collections.List
 
@@ -9,7 +10,7 @@ fun isKeyword(name: String): Boolean {
     return isBuiltIn(name) || isSpecialForm(name)
 }
 
-abstract class Element() {
+abstract class Element(var analysisData: AnalysisData = AnalysisData()) {
     abstract fun evaluate(state: ProgramState, input: kotlin.collections.List<Element>? = null): Element
 
     abstract fun print(): String

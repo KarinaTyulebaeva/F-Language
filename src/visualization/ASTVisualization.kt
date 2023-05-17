@@ -3,7 +3,6 @@ package visualization
 import program.exceptions.SyntaxException
 import syntax.LISPParser
 import syntax.LISPParser.LISPLexer
-import visualization.Visualize.TreeToPNG
 import java.io.FileReader
 import java.io.FileWriter
 import java.io.IOException

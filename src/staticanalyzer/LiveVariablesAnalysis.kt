@@ -3,9 +3,7 @@ package staticanalyzer
 import program.*
 import program.List
 
-data class ElementWithAnalysisData(
-    val element: Element = NullElement(),
-    val children: kotlin.collections.List<ElementWithAnalysisData> = emptyList(),
+data class AnalysisData(
     val gen: Set<String> = mutableSetOf(),
     val kill: Set<String> = mutableSetOf(),
     var setIn: Set<String> = mutableSetOf(),
@@ -46,10 +44,11 @@ fun getElementToEvaluate(identifier: Identifier, elements: kotlin.collections.Li
     return elements[0]
 }
 
-fun calculateLiveVariables(element: Element, input: ElementWithAnalysisData): ElementWithAnalysisData {
+fun calculateLiveVariables(element: Element,
+                           input: AnalysisData,
+                           isSequental: Boolean = false): Element {
     var gen = setOf<String>()
     var kill = setOf<String>()
-    var children = mutableListOf<ElementWithAnalysisData>()
     var setIn: Set<String>
     var setOut = setOf<String>().union(input.setIn)
     when (element) {
@@ -61,54 +60,60 @@ fun calculateLiveVariables(element: Element, input: ElementWithAnalysisData): El
                             val identifier = firstElement
                             val rest = element.elements.drop(1)
 
-                            val localInput = ElementWithAnalysisData(
-                                input.element,
-                                input.children,
-                                input.gen,
-                                input.kill,
-                                input.setIn.minus(getKilledVariablesIn(identifier, rest)),
-                                input.setOut
-                            )
-                            val expression = calculateLiveVariables(getElementToEvaluate(identifier, rest), localInput)
-                            children.add(expression)
+                            val localInput = input.let {
+                                AnalysisData(
+                                    it.gen,
+                                    input.kill,
+                                    input.setIn.minus(getKilledVariablesIn(identifier, rest)),
+                                    input.setOut
+                                )
+                            }
+                            val expression = calculateLiveVariables(
+                                getElementToEvaluate(identifier, rest),
+                                localInput,
+                                identifier.name == "prog")
 
 
-                            setOut = setOut.union(expression.setIn)
+                            expression.analysisData.let {
+                                setOut = setOut.union(it.setIn)
+                            }
                             kill = kill.union(getKilledVariablesOut(identifier, rest))
                         } else -> {
                             var prevInput = input
                             for (elem in element.elements.reversed()) {
-                                val prev = calculateLiveVariables(elem, prevInput)
-                                children.add(prev)
-                                setOut = setOut.union(prev.setIn)
-                                prevInput = prev
+                                val prev = calculateLiveVariables(elem, if (isSequental) prevInput else input)
+                                prev.analysisData.let {
+                                        setOut = setOut.union(it.setIn)
+                                }
+                                prevInput = prev.analysisData
                             }
                         }
                     }
                 }  else -> {
                     var prevInput = input
                     for (elem in element.elements.reversed()) {
-                        val prev = calculateLiveVariables(elem, prevInput)
-                        children.add(prev)
-                        setOut = setOut.union(prev.setIn)
-                        prevInput = prev
+                        val prev = calculateLiveVariables(elem, if (isSequental) prevInput else input)
+                        prev.analysisData.let {
+                            setOut = setOut.union(it.setIn)
+                        }
+                        prevInput = prev.analysisData
                     }
                 }
             }
         }
         is Identifier -> {
-            if (isKeyword(element.name) || isSpecialForm(element.name)) {
-                return ElementWithAnalysisData(element)
+            if (!isKeyword(element.name) && !isSpecialForm(element.name)) {
+                gen = gen.union(setOf(element.name))
             }
-            gen = gen.union(setOf(element.name))
         }
     }
     setIn = gen.union(setOut.minus(kill))
-    return ElementWithAnalysisData(element, children, gen, kill, setIn,setOut)
+    element.analysisData = AnalysisData(gen, kill, setIn,setOut)
+    return element
 }
 
-fun calculateLiveVariables(program: List): ElementWithAnalysisData {
-    return calculateLiveVariables(program, ElementWithAnalysisData())
+fun calculateLiveVariables(program: List): Element {
+    return calculateLiveVariables(program, AnalysisData(), true)
 }
 
 fun getAllIdentifiers(program: Element): Set<String> {
@@ -129,10 +134,12 @@ fun getAllIdentifiers(program: Element): Set<String> {
     return identifiers
 }
 
-fun getAllSetIns(program: ElementWithAnalysisData): Set<String> {
-    var setIns = program.setIn
-    for (child in program.children) {
-        setIns = setIns.union(getAllSetIns(child))
+fun getAllSetIns(program: Element): Set<String> {
+    var setIns = program.analysisData.setIn
+    if (program is List) {
+        for (child in program.elements) {
+            setIns = setIns.union(getAllSetIns(child))
+        }
     }
     return setIns
 }

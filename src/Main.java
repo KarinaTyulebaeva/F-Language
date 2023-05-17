@@ -16,35 +16,9 @@ import static staticanalyzer.LiveVariablesAnalysisKt.getUnusedVariables;
 // нет
 public class Main {
 
-    static void veryBadJob() throws InterruptedException, IOException {
-        while (true) {
-            try {
-                FileReader fr = new FileReader("/Users/r-shakirova/IdeaProjects/F-Language/input.txt");
-                var lexer = new LISPParser.LISPLexer(fr);
-                var parser = new LISPParser(lexer);
-                parser.parse();
-                fr.close();
-
-                var program = (List) getProgram(LISPParser.node);
-                var result = getUnusedVariables(program);
-                FileWriter fw = new FileWriter("/Users/r-shakirova/IdeaProjects/F-Language/output.txt");
-                for (var variable : result) {
-                    fw.write(variable + ",");
-                }
-                fw.close();
-            } catch (Throwable ex) {
-                ex.printStackTrace();
-                System.out.println(ex.getMessage());
-            }
-            Thread.sleep(1000);
-        }
-    }
     public static void main(String[] args) throws IOException, IllegalStateException, SyntaxException {
         try {
             var mode = args[0];
-            if (mode.equals("job")) {
-                veryBadJob();
-            }
             var reader = new StringReader(args[1]);
             var lexer = new LISPParser.LISPLexer(reader);
             var parser = new LISPParser(lexer);
@@ -82,8 +56,7 @@ public class Main {
                 }
             }
         } catch (Throwable ex) {
-            System.out.println(ex.toString());
-            ex.printStackTrace();
+            System.out.println("");
         }
     }
 }
